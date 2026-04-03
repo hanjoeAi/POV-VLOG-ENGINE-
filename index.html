@@ -84,19 +84,45 @@ function generateDialog(i, lang){
 }
 
 function generateAll(){
-  const mode = modeEl.value;
-  const keyword = keywordEl.value;
-  const location = locationEl.value;
-  const mood = moodEl.value;
-  const scenes = parseInt(scenesEl.value);
-  const lang = langEl.value;
+  const mode = document.getElementById('mode').value;
+  const keyword = document.getElementById('keyword').value;
+  const location = document.getElementById('location').value;
+  const mood = document.getElementById('mood').value;
+  const scenes = parseInt(document.getElementById('scenes').value);
+  const lang = document.getElementById('lang').value;
 
   let video="", image="", script="", hashtag="";
 
-  video += `[REFERENCE_IMAGE: uploaded]\nPOV vlog, same identity, ultra realistic\n\n`;
+  video += `[REFERENCE_IMAGE: uploaded]
+POV vlog, same identity, ultra realistic, mood: ${mood}
+
+`;
 
   for(let i=1;i<=scenes;i++){
     video += `SCENE ${i}: `;
+    if(i===1) video += `normal vlog in ${location}`;
+    else if(i===2) video += `strange event begins: ${keyword}`;
+    else if(i===scenes) video += `chaos + panic + ${rand(["blackout","camera drop","glitch","run away"])}`;
+    else video += `tension increases`;
+
+    video += ` | dialog: "${generateDialog(i,lang)}"
+`;
+  }
+
+  image = `POV selfie thumbnail, shocked expression, ${keyword}, cinematic lighting, ultra realistic, same face as reference`;
+
+  script = "";
+  for(let i=1;i<=scenes;i++){
+    script += generateDialog(i,lang) + " ";
+  }
+
+  hashtag = `#aivideo #povvlog #viral #cinematic #fyp #storytelling #${keyword.replace(/ /g,'')}`;
+
+  document.getElementById('videoOutput').value = video;
+  document.getElementById('imageOutput').value = image;
+  document.getElementById('scriptOutput').value = script;
+  document.getElementById('hashtagOutput').value = hashtag;
+}: `;
     if(i===1) video += `normal vlog in ${location}`;
     else if(i===2) video += `strange event begins: ${keyword}`;
     else if(i===scenes) video += `chaos + panic + blackout`;
