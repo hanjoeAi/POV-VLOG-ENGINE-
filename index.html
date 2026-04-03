@@ -140,8 +140,9 @@ function sound(i, last){
 // DIALOG
 function dialog(i, lang, keyword){
 
-  let type = detectType(keyword);
+  if(!keyword) keyword = "";
 
+  let type = detectType(keyword);
   const dialogs = {
 
     alien: {
@@ -203,6 +204,8 @@ function dialog(i, lang, keyword){
 
 function detectType(keyword){
 
+  if(!keyword) keyword = "";
+
   keyword = keyword.toLowerCase();
 
   if(keyword.includes("alien") || keyword.includes("ufo"))
@@ -218,7 +221,7 @@ function detectType(keyword){
     return "creature";
 
   return "mystery";
-}
+     }
 
 // ENDING VARIATION
 function ending(){
