@@ -51,17 +51,17 @@
 </div><script>
 let imageData = "";
 
-document.getElementById('imageFile').addEventListener('change', function(e){
-  const file = e.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = function(evt){
-    imageData = evt.target.result;
-    document.getElementById('preview').src = imageData;
-    document.getElementById('preview').style.display = 'block';
-  };
-  reader.readAsDataURL(file);
-});
+const modeEl = document.getElementById('mode');
+const keywordEl = document.getElementById('keyword');
+const locationEl = document.getElementById('location');
+const moodEl = document.getElementById('mood');
+const scenesEl = document.getElementById('scenes');
+const langEl = document.getElementById('lang');
+
+const videoOutput = document.getElementById('videoOutput');
+const imageOutput = document.getElementById('imageOutput');
+const scriptOutput = document.getElementById('scriptOutput');
+const hashtagOutput = document.getElementById('hashtagOutput');
 
 function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
@@ -84,67 +84,58 @@ function generateDialog(i, lang){
 }
 
 function generateAll(){
-  const mode = document.getElementById('mode').value;
-  const keyword = document.getElementById('keyword').value;
-  const location = document.getElementById('location').value;
-  const mood = document.getElementById('mood').value;
-  const scenes = parseInt(document.getElementById('scenes').value);
-  const lang = document.getElementById('lang').value;
+  try {
+    const mode = modeEl.value;
+    const keyword = keywordEl.value || "unknown event";
+    const location = locationEl.value || "unknown place";
+    const mood = moodEl.value;
+    const scenes = parseInt(scenesEl.value) || 4;
+    const lang = langEl.value;
 
-  let video="", image="", script="", hashtag="";
+    let video="", image="", script="", hashtag="";
 
-  video += `[REFERENCE_IMAGE: uploaded]
+    video += `[REFERENCE_IMAGE: uploaded]
 POV vlog, same identity, ultra realistic, mood: ${mood}
 
 `;
 
-  for(let i=1;i<=scenes;i++){
-    video += `SCENE ${i}: `;
-    if(i===1) video += `normal vlog in ${location}`;
-    else if(i===2) video += `strange event begins: ${keyword}`;
-    else if(i===scenes) video += `chaos + panic + ${rand(["blackout","camera drop","glitch","run away"])}`;
-    else video += `tension increases`;
+    for(let i=1;i<=scenes;i++){
+      video += `SCENE ${i}: `;
+      if(i===1) video += `normal vlog in ${location}`;
+      else if(i===2) video += `strange event begins: ${keyword}`;
+      else if(i===scenes) video += `chaos + panic + ${rand(["blackout","camera drop","glitch","run away"])}`;
+      else video += `tension increases`;
 
-    video += ` | dialog: "${generateDialog(i,lang)}"
+      video += ` | dialog: "${generateDialog(i,lang)}"
 `;
+    }
+
+    image = `POV selfie thumbnail, shocked expression, ${keyword}, cinematic lighting, ultra realistic, same face as reference`;
+
+    for(let i=1;i<=scenes;i++){
+      script += generateDialog(i,lang) + " ";
+    }
+
+    hashtag = `#aivideo #povvlog #viral #cinematic #fyp #storytelling #${keyword.replace(/ /g,'')}`;
+
+    videoOutput.value = video;
+    imageOutput.value = image;
+    scriptOutput.value = script;
+    hashtagOutput.value = hashtag;
+
+  } catch (err) {
+    alert("Error: " + err.message);
   }
-
-  image = `POV selfie thumbnail, shocked expression, ${keyword}, cinematic lighting, ultra realistic, same face as reference`;
-
-  script = "";
-  for(let i=1;i<=scenes;i++){
-    script += generateDialog(i,lang) + " ";
-  }
-
-  hashtag = `#aivideo #povvlog #viral #cinematic #fyp #storytelling #${keyword.replace(/ /g,'')}`;
-
-  document.getElementById('videoOutput').value = video;
-  document.getElementById('imageOutput').value = image;
-  document.getElementById('scriptOutput').value = script;
-  document.getElementById('hashtagOutput').value = hashtag;
-}: `;
-    if(i===1) video += `normal vlog in ${location}`;
-    else if(i===2) video += `strange event begins: ${keyword}`;
-    else if(i===scenes) video += `chaos + panic + blackout`;
-    else video += `tension increases`;
-
-    video += ` | dialog: "${generateDialog(i,lang)}"\n`;
-  }
-
-  image = `POV selfie thumbnail, shocked expression, ${keyword}, cinematic lighting, ultra realistic`;
-
-  script = `${generateDialog(1,lang)} ... ${generateDialog(2,lang)} ... ${generateDialog(3,lang)}`;
-
-  hashtag = `#aivideo #povvlog #viral #cinematic #fyp #storytelling`;
-
-  videoOutput.value = video;
-  imageOutput.value = image;
-  scriptOutput.value = script;
-  hashtagOutput.value = hashtag;
 }
 
 function copyAll(){
-  const all = videoOutput.value + "\n\n" + imageOutput.value + "\n\n" + scriptOutput.value + "\n\n" + hashtagOutput.value;
+  const all = videoOutput.value + "
+
+" + imageOutput.value + "
+
+" + scriptOutput.value + "
+
+" + hashtagOutput.value;
   navigator.clipboard.writeText(all);
   alert('Copied All!');
 }
