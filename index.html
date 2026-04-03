@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="id">
+<!DOCTYPE html>
+<html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,40 +18,64 @@
     img {max-width:150px; margin-top:10px; border-radius:10px;}
   </style>
 </head>
-<body><div class="container">
-  <h1>🔥 Cinematic POV Vlog Generator v5</h1><label>Mode</label> <select id="mode"> <option value="time">Time Travel Vlog</option> <option value="daily">Daily Vlog</option> </select>
+<body>
 
-<label>Upload Image Reference</label> <input type="file" id="imageFile" accept="image/*"> <img id="preview" style="display:none;" />
+<div class="container">
+  <h1>🔥 Cinematic POV Vlog Generator v5</h1>
 
-<label>Keyword / Era</label> <input type="text" id="keyword" placeholder="alien di hutan / ancient rome">
+  <label>Mode</label>
+  <select id="mode">
+    <option value="time">Time Travel Vlog</option>
+    <option value="daily">Daily Vlog</option>
+  </select>
 
-<label>Lokasi</label> <input type="text" id="location" placeholder="hutan, kota, gurun...">
+  <label>Upload Image Reference</label>
+  <input type="file" id="imageFile" accept="image/*">
+  <img id="preview" style="display:none;" />
 
-<label>Mood</label> <select id="mood"> <option value="horror">Horror</option> <option value="tense">Tense</option> <option value="epic">Epic</option> <option value="chaotic">Chaotic</option> </select>
+  <label>Keyword / Era</label>
+  <input type="text" id="keyword" placeholder="alien di hutan / ancient rome">
 
-<label>Bahasa Dialog</label> <select id="lang"> <option value="id">Bahasa Indonesia</option> <option value="en">English</option> </select>
+  <label>Lokasi</label>
+  <input type="text" id="location" placeholder="hutan, kota, gurun...">
 
-<label>Jumlah Scene</label> <input type="number" id="scenes" value="4" min="3" max="6">
+  <label>Mood</label>
+  <select id="mood">
+    <option value="horror">Horror</option>
+    <option value="tense">Tense</option>
+    <option value="epic">Epic</option>
+    <option value="chaotic">Chaotic</option>
+  </select>
 
-<button onclick="generateAll()">🚀 Generate Full Content</button>
+  <label>Bahasa Dialog</label>
+  <select id="lang">
+    <option value="id">Bahasa Indonesia</option>
+    <option value="en">English</option>
+  </select>
+
+  <label>Jumlah Scene</label>
+  <input type="number" id="scenes" value="4" min="3" max="6">
+
+  <button onclick="generateAll()">🚀 Generate Full Content</button>
 
   <div class="output">
     <h3>🎬 Video Prompt</h3>
-    <textarea id="videoOutput"></textarea><h3>🖼️ Thumbnail Prompt</h3>
-<textarea id="imageOutput"></textarea>
+    <textarea id="videoOutput"></textarea>
 
-<h3>🎙️ Script Narasi</h3>
-<textarea id="scriptOutput"></textarea>
+    <h3>🖼️ Thumbnail Prompt</h3>
+    <textarea id="imageOutput"></textarea>
 
-<h3>🔥 Hashtag</h3>
-<textarea id="hashtagOutput"></textarea>
+    <h3>🎙️ Script Narasi</h3>
+    <textarea id="scriptOutput"></textarea>
 
-<button onclick="copyAll()">📋 Copy All</button>
+    <h3>🔥 Hashtag</h3>
+    <textarea id="hashtagOutput"></textarea>
 
+    <button onclick="copyAll()">📋 Copy All</button>
   </div>
-</div><script>
-document.addEventListener("DOMContentLoaded", function(){
+</div>
 
+<script>
 let imageData = "";
 
 const modeEl = document.getElementById('mode');
@@ -85,7 +110,7 @@ function generateDialog(i, lang){
   return lang==='id'? id[i%id.length]:en[i%en.length];
 }
 
-window.generateAll = function(){
+function generateAll(){
   try {
     const mode = modeEl.value;
     const keyword = keywordEl.value || "unknown event";
@@ -130,7 +155,7 @@ POV vlog, same identity, ultra realistic, mood: ${mood}
   }
 }
 
-window.copyAll = function(){
+function copyAll(){
   const all = videoOutput.value + "
 
 " + imageOutput.value + "
@@ -141,7 +166,7 @@ window.copyAll = function(){
   navigator.clipboard.writeText(all);
   alert('Copied All!');
 }
+</script>
 
-});
-</script></body>
-  </html>
+</body>
+</html>
