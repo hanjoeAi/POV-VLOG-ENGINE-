@@ -76,16 +76,19 @@ function dialog(i, lang){
 
 function generate(){
   try{
-    let imgInput = document.getElementById("imgRef");
-    let refText = "[NO REFERENCE IMAGE]";
 
-    if(imgInput && imgInput.files.length > 0){
-  refText = "[REFERENCE_IMAGE: uploaded]";
-}
     let keyword = document.getElementById("keyword").value || "kejadian aneh";
     let location = document.getElementById("location").value || "tempat misterius";
     let lang = document.getElementById("lang").value;
     let scenes = parseInt(document.getElementById("scenes").value) || 4;
+
+    // 🔥 FIX IMAGE (WAJIB DI DALAM FUNCTION)
+    let imgInput = document.getElementById("imgRef");
+    let refText = "[NO REFERENCE IMAGE]";
+
+    if(imgInput && imgInput.files && imgInput.files.length > 0){
+      refText = "[REFERENCE_IMAGE: uploaded]";
+    }
 
     let imgPrompt = "";
     let videoPrompt = "";
