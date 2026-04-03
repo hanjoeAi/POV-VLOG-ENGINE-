@@ -1,0 +1,137 @@
+<!DOCTYPE html><html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cinematic POV Vlog Generator v4</title>
+  <style>
+    body {font-family: Arial, sans-serif; background:#020617; color:#fff; padding:20px;}
+    h1 {text-align:center;}
+    .container {max-width:1000px; margin:auto;}
+    input, select, textarea, button {
+      width:100%; padding:10px; margin:8px 0; border-radius:10px; border:none;
+    }
+    button {background:#38bdf8; color:#000; font-weight:bold; cursor:pointer;}
+    button:hover {background:#0ea5e9;}
+    textarea {height:320px;}
+    .output {background:#020617; padding:15px; border-radius:12px; border:1px solid #1e293b;}
+  </style>
+</head>
+<body><div class="container">
+  <h1>🎬 Cinematic POV Vlog Generator v4</h1><label>Mode</label> <select id="mode"> <option value="time">Time Travel Vlog</option> <option value="daily">Daily Vlog</option> </select>
+
+<label>Image Reference URL</label> <input type="text" id="imageRef" placeholder="https://...">
+
+<label>Keyword / Era</label> <input type="text" id="keyword" placeholder="contoh: alien di hutan / ancient rome">
+
+<label>Lokasi</label> <input type="text" id="location" placeholder="hutan, kota, gurun...">
+
+<label>Mood</label> <select id="mood"> <option value="tense">Tense</option> <option value="horror">Horror</option> <option value="epic">Epic</option> <option value="chaotic">Chaotic</option> </select>
+
+<label>Bahasa Dialog</label> <select id="lang"> <option value="id">Bahasa Indonesia</option> <option value="en">English</option> </select>
+
+<label>Jumlah Scene</label> <input type="number" id="scenes" value="4" min="3" max="6">
+
+<button onclick="generatePrompt()">🚀 Generate Cinematic Master</button>
+
+  <div class="output">
+    <textarea id="result"></textarea>
+    <button onclick="copyText()">📋 Copy</button>
+  </div>
+</div><script>
+function randomCamera(){
+  const cams = [
+    "handheld shake, slight motion blur",
+    "sudden zoom-in, unstable framing",
+    "quick pan movement, imperfect focus",
+    "camera tilt, accidental framing",
+    "fast movement with motion blur"
+  ];
+  return cams[Math.floor(Math.random()*cams.length)];
+}
+
+function randomEnding(){
+  const ends = [
+    "sudden blackout, audio cuts",
+    "camera drops to ground, static noise",
+    "character runs away, heavy breathing fades",
+    "screen glitch, unknown figure appears",
+    "abrupt silence, unresolved tension"
+  ];
+  return ends[Math.floor(Math.random()*ends.length)];
+}
+
+function generateDialog(scene, lang){
+  if(lang === "id"){
+    const lines = [
+      "guys ini serius... ada sesuatu di sana",
+      "gue gak yakin ini aman...",
+      "apa itu barusan?!",
+      "anjir ini beneran terjadi...",
+      "gue harus pergi sekarang!"
+    ];
+    return lines[scene % lines.length];
+  } else {
+    const lines = [
+      "guys this is not normal...",
+      "something is out there...",
+      "did you see that?!",
+      "this is реально happening...",
+      "I need to get out now!"
+    ];
+    return lines[scene % lines.length];
+  }
+}
+
+function generatePrompt(){
+  const mode = document.getElementById('mode').value;
+  const image = document.getElementById('imageRef').value;
+  const keyword = document.getElementById('keyword').value;
+  const location = document.getElementById('location').value;
+  const mood = document.getElementById('mood').value;
+  const scenes = parseInt(document.getElementById('scenes').value);
+  const lang = document.getElementById('lang').value;
+
+  let output = "";
+
+  output += `[REFERENCE_IMAGE: ${image}]\n`;
+  output += `POV selfie vlog, same person as reference image, consistent identity, raw realistic footage.\n`;
+  output += `Mood: ${mood}\n\n`;
+
+  if(mode === "time"){
+    output += `Time Travel Event: ${keyword}\n\n`;
+  } else {
+    output += `Strange Event: ${keyword}\n\n`;
+  }
+
+  for(let i=1;i<=scenes;i++){
+    output += `--- SCENE ${i} ---\n`;
+
+    if(i===1){
+      output += `normal vlog, environment ${location}, calm situation\n`;
+    } else if(i===2){
+      output += `subtle anomaly begins, silence, something feels off\n`;
+    } else if(i===3){
+      output += `escalation, visible anomaly, fear increases\n`;
+    } else if(i===scenes){
+      output += `chaos peak, panic reaction, ${randomEnding()}\n`;
+    } else {
+      output += `increasing tension, unstable environment\n`;
+    }
+
+    output += `camera: ${randomCamera()}\n`;
+    output += `audio: ambient sound, breathing, environmental noise\n`;
+    output += `dialog: "${generateDialog(i, lang)}"\n`;
+    output += `style: ultra realistic, imperfect, handheld\n\n`;
+  }
+
+  document.getElementById('result').value = output;
+}
+
+function copyText(){
+  const text = document.getElementById('result');
+  text.select();
+  document.execCommand('copy');
+  alert('Prompt copied!');
+}
+</script></body>
+  </html>
