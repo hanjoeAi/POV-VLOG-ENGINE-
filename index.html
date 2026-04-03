@@ -236,6 +236,7 @@ function ending(){
 function generate(){
 
   try{
+    let mode = document.getElementById("mode").value;
 
     let keyword = document.getElementById("keyword").value || "kejadian aneh";
     let location = document.getElementById("location").value || "tempat misterius";
@@ -252,7 +253,12 @@ function generate(){
 
     for(let i=1;i<=scenes;i++){
 
-      let imgPrompt = `
+      let imgPrompt = "";
+
+if(mode === "daily"){
+
+  // ===== DAILY VLOG LOGIC =====
+  imgPrompt = `
 POV selfie vlog, ${refText}
 
 scene ${i} / ${scenes}
@@ -260,8 +266,44 @@ scene ${i} / ${scenes}
 location:
 ${location}
 
-event:
+${
+  i==1
+  ? "situation: normal daily activity, nothing unusual"
+  : i==2
+  ? "situation: first anomaly appears: " + keyword
+  : i==scenes
+  ? "situation: chaos, panic, intense moment"
+  : "situation: tension rising, something feels off"
+}
+
+composition:
+- shot: ${rand(["close-up","medium shot","wide shot"])}
+- camera path: ${cameraPath(i, scenes)}
+- angle: eye level
+
+character micro-expression:
+${expression(i, scenes)}
+
+lighting:
+${lighting(i, scenes)}
+
+style:
+ultra realistic, raw vlog footage
+`;
+
+} else {
+
+  // ===== TIME TRAVEL VLOG (TETAP FULL EVENT) =====
+  imgPrompt = `
+POV selfie vlog, ${refText}
+
+scene ${i} / ${scenes}
+
+time period / event:
 ${keyword}
+
+location:
+${location}
 
 composition:
 - shot: ${rand(["close-up","medium shot","wide shot"])}
@@ -275,14 +317,14 @@ lighting:
 ${lighting(i, scenes)}
 
 details:
-- skin texture visible
-- eye reflection realistic
-- motion blur subtle
-- cinematic realism
+- historical accuracy
+- environmental storytelling
+- immersive background
 
 style:
-ultra realistic, raw vlog footage, documentary style
+ultra realistic, cinematic historical vlog
 `;
+}
 
       imageHTML += `
 <div class="block">
