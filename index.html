@@ -49,6 +49,8 @@
 
   </div>
 </div><script>
+document.addEventListener("DOMContentLoaded", function(){
+
 let imageData = "";
 
 const modeEl = document.getElementById('mode');
@@ -83,7 +85,7 @@ function generateDialog(i, lang){
   return lang==='id'? id[i%id.length]:en[i%en.length];
 }
 
-function generateAll(){
+window.generateAll = function(){
   try {
     const mode = modeEl.value;
     const keyword = keywordEl.value || "unknown event";
@@ -128,7 +130,7 @@ POV vlog, same identity, ultra realistic, mood: ${mood}
   }
 }
 
-function copyAll(){
+window.copyAll = function(){
   const all = videoOutput.value + "
 
 " + imageOutput.value + "
@@ -139,5 +141,7 @@ function copyAll(){
   navigator.clipboard.writeText(all);
   alert('Copied All!');
 }
+
+});
 </script></body>
-</html>
+  </html>
