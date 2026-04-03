@@ -2,136 +2,125 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cinematic POV Vlog Generator v4</title>
+  <title>Cinematic POV Vlog Generator v5 - Full Content Engine</title>
   <style>
     body {font-family: Arial, sans-serif; background:#020617; color:#fff; padding:20px;}
     h1 {text-align:center;}
-    .container {max-width:1000px; margin:auto;}
+    .container {max-width:1100px; margin:auto;}
     input, select, textarea, button {
       width:100%; padding:10px; margin:8px 0; border-radius:10px; border:none;
     }
-    button {background:#38bdf8; color:#000; font-weight:bold; cursor:pointer;}
-    button:hover {background:#0ea5e9;}
-    textarea {height:320px;}
-    .output {background:#020617; padding:15px; border-radius:12px; border:1px solid #1e293b;}
+    button {background:#f59e0b; color:#000; font-weight:bold; cursor:pointer;}
+    button:hover {background:#d97706;}
+    textarea {height:260px;}
+    .output {background:#020617; padding:15px; border-radius:12px; border:1px solid #1e293b; margin-top:15px;}
+    img {max-width:150px; margin-top:10px; border-radius:10px;}
   </style>
 </head>
 <body><div class="container">
-  <h1>🎬 Cinematic POV Vlog Generator v4</h1><label>Mode</label> <select id="mode"> <option value="time">Time Travel Vlog</option> <option value="daily">Daily Vlog</option> </select>
+  <h1>🔥 Cinematic POV Vlog Generator v5</h1><label>Mode</label> <select id="mode"> <option value="time">Time Travel Vlog</option> <option value="daily">Daily Vlog</option> </select>
 
-<label>Image Reference URL</label> <input type="text" id="imageRef" placeholder="https://...">
+<label>Upload Image Reference</label> <input type="file" id="imageFile" accept="image/*"> <img id="preview" style="display:none;" />
 
-<label>Keyword / Era</label> <input type="text" id="keyword" placeholder="contoh: alien di hutan / ancient rome">
+<label>Keyword / Era</label> <input type="text" id="keyword" placeholder="alien di hutan / ancient rome">
 
 <label>Lokasi</label> <input type="text" id="location" placeholder="hutan, kota, gurun...">
 
-<label>Mood</label> <select id="mood"> <option value="tense">Tense</option> <option value="horror">Horror</option> <option value="epic">Epic</option> <option value="chaotic">Chaotic</option> </select>
+<label>Mood</label> <select id="mood"> <option value="horror">Horror</option> <option value="tense">Tense</option> <option value="epic">Epic</option> <option value="chaotic">Chaotic</option> </select>
 
 <label>Bahasa Dialog</label> <select id="lang"> <option value="id">Bahasa Indonesia</option> <option value="en">English</option> </select>
 
 <label>Jumlah Scene</label> <input type="number" id="scenes" value="4" min="3" max="6">
 
-<button onclick="generatePrompt()">🚀 Generate Cinematic Master</button>
+<button onclick="generateAll()">🚀 Generate Full Content</button>
 
   <div class="output">
-    <textarea id="result"></textarea>
-    <button onclick="copyText()">📋 Copy</button>
+    <h3>🎬 Video Prompt</h3>
+    <textarea id="videoOutput"></textarea><h3>🖼️ Thumbnail Prompt</h3>
+<textarea id="imageOutput"></textarea>
+
+<h3>🎙️ Script Narasi</h3>
+<textarea id="scriptOutput"></textarea>
+
+<h3>🔥 Hashtag</h3>
+<textarea id="hashtagOutput"></textarea>
+
+<button onclick="copyAll()">📋 Copy All</button>
+
   </div>
 </div><script>
-function randomCamera(){
-  const cams = [
-    "handheld shake, slight motion blur",
-    "sudden zoom-in, unstable framing",
-    "quick pan movement, imperfect focus",
-    "camera tilt, accidental framing",
-    "fast movement with motion blur"
+let imageData = "";
+
+document.getElementById('imageFile').addEventListener('change', function(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt){
+    imageData = evt.target.result;
+    document.getElementById('preview').src = imageData;
+    document.getElementById('preview').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+});
+
+function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+function generateDialog(i, lang){
+  const id = [
+    "guys ini gak normal...",
+    "serius gue denger sesuatu",
+    "apa itu barusan?!",
+    "ini makin gak masuk akal...",
+    "gue harus cabut sekarang!"
   ];
-  return cams[Math.floor(Math.random()*cams.length)];
-}
-
-function randomEnding(){
-  const ends = [
-    "sudden blackout, audio cuts",
-    "camera drops to ground, static noise",
-    "character runs away, heavy breathing fades",
-    "screen glitch, unknown figure appears",
-    "abrupt silence, unresolved tension"
+  const en = [
+    "guys this is not normal...",
+    "I hear something...",
+    "what was that?!",
+    "this is getting worse...",
+    "I need to leave now!"
   ];
-  return ends[Math.floor(Math.random()*ends.length)];
+  return lang==='id'? id[i%id.length]:en[i%en.length];
 }
 
-function generateDialog(scene, lang){
-  if(lang === "id"){
-    const lines = [
-      "guys ini serius... ada sesuatu di sana",
-      "gue gak yakin ini aman...",
-      "apa itu barusan?!",
-      "anjir ini beneran terjadi...",
-      "gue harus pergi sekarang!"
-    ];
-    return lines[scene % lines.length];
-  } else {
-    const lines = [
-      "guys this is not normal...",
-      "something is out there...",
-      "did you see that?!",
-      "this is реально happening...",
-      "I need to get out now!"
-    ];
-    return lines[scene % lines.length];
-  }
-}
+function generateAll(){
+  const mode = modeEl.value;
+  const keyword = keywordEl.value;
+  const location = locationEl.value;
+  const mood = moodEl.value;
+  const scenes = parseInt(scenesEl.value);
+  const lang = langEl.value;
 
-function generatePrompt(){
-  const mode = document.getElementById('mode').value;
-  const image = document.getElementById('imageRef').value;
-  const keyword = document.getElementById('keyword').value;
-  const location = document.getElementById('location').value;
-  const mood = document.getElementById('mood').value;
-  const scenes = parseInt(document.getElementById('scenes').value);
-  const lang = document.getElementById('lang').value;
+  let video="", image="", script="", hashtag="";
 
-  let output = "";
-
-  output += `[REFERENCE_IMAGE: ${image}]\n`;
-  output += `POV selfie vlog, same person as reference image, consistent identity, raw realistic footage.\n`;
-  output += `Mood: ${mood}\n\n`;
-
-  if(mode === "time"){
-    output += `Time Travel Event: ${keyword}\n\n`;
-  } else {
-    output += `Strange Event: ${keyword}\n\n`;
-  }
+  video += `[REFERENCE_IMAGE: uploaded]\nPOV vlog, same identity, ultra realistic\n\n`;
 
   for(let i=1;i<=scenes;i++){
-    output += `--- SCENE ${i} ---\n`;
+    video += `SCENE ${i}: `;
+    if(i===1) video += `normal vlog in ${location}`;
+    else if(i===2) video += `strange event begins: ${keyword}`;
+    else if(i===scenes) video += `chaos + panic + blackout`;
+    else video += `tension increases`;
 
-    if(i===1){
-      output += `normal vlog, environment ${location}, calm situation\n`;
-    } else if(i===2){
-      output += `subtle anomaly begins, silence, something feels off\n`;
-    } else if(i===3){
-      output += `escalation, visible anomaly, fear increases\n`;
-    } else if(i===scenes){
-      output += `chaos peak, panic reaction, ${randomEnding()}\n`;
-    } else {
-      output += `increasing tension, unstable environment\n`;
-    }
-
-    output += `camera: ${randomCamera()}\n`;
-    output += `audio: ambient sound, breathing, environmental noise\n`;
-    output += `dialog: "${generateDialog(i, lang)}"\n`;
-    output += `style: ultra realistic, imperfect, handheld\n\n`;
+    video += ` | dialog: "${generateDialog(i,lang)}"\n`;
   }
 
-  document.getElementById('result').value = output;
+  image = `POV selfie thumbnail, shocked expression, ${keyword}, cinematic lighting, ultra realistic`;
+
+  script = `${generateDialog(1,lang)} ... ${generateDialog(2,lang)} ... ${generateDialog(3,lang)}`;
+
+  hashtag = `#aivideo #povvlog #viral #cinematic #fyp #storytelling`;
+
+  videoOutput.value = video;
+  imageOutput.value = image;
+  scriptOutput.value = script;
+  hashtagOutput.value = hashtag;
 }
 
-function copyText(){
-  const text = document.getElementById('result');
-  text.select();
-  document.execCommand('copy');
-  alert('Prompt copied!');
+function copyAll(){
+  const all = videoOutput.value + "\n\n" + imageOutput.value + "\n\n" + scriptOutput.value + "\n\n" + hashtagOutput.value;
+  navigator.clipboard.writeText(all);
+  alert('Copied All!');
 }
 </script></body>
-  </html>
+</html>
