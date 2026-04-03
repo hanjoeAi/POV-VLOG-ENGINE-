@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>POV Vlog Generator v5 FIX</title>
+<title>POV Vlog Generator v5 FINAL</title>
 
 <style>
 body {background:#020617; color:white; font-family:Arial; padding:20px;}
@@ -11,22 +11,22 @@ input, select, textarea, button {
   width:100%; margin:8px 0; padding:10px; border-radius:8px; border:none;
 }
 button {background:orange; font-weight:bold;}
-textarea {height:150px;}
+textarea {height:160px;}
 </style>
 </head>
 
 <body>
 
-<h2>🔥 POV Vlog Generator (FIX)</h2>
+<h2>🔥 POV Vlog Generator FINAL</h2>
+
+<label>Upload Image Reference</label>
+<input type="file" id="imgRef" accept="image/*">
 
 <select id="mode">
 <option value="time">Time Travel</option>
 <option value="daily">Daily</option>
 </select>
-  
-<label>Upload Image Reference</label>
-<input type="file" id="imgRef" accept="image/*">
-  
+
 <input id="keyword" placeholder="alien di hutan">
 <input id="location" placeholder="lokasi">
 
@@ -39,16 +39,16 @@ textarea {height:150px;}
 
 <button onclick="generate()">GENERATE</button>
 
-<h3>Video</h3>
-<textarea id="video"></textarea>
-
-<h3>Image</h3>
+<h3>🎬 IMAGE PROMPT (per scene)</h3>
 <textarea id="image"></textarea>
 
-<h3>Script</h3>
-<textarea id="script"></textarea>
+<h3>🎥 VIDEO PROMPT (per scene)</h3>
+<textarea id="video"></textarea>
 
-<h3>Hashtag</h3>
+<h3>🖼️ THUMBNAIL</h3>
+<textarea id="thumbnail"></textarea>
+
+<h3>🔥 HASHTAG</h3>
 <textarea id="tag"></textarea>
 
 <script>
@@ -57,50 +57,34 @@ function rand(arr){
 }
 
 function dialog(i, lang){
-  const id = [
-    "ini gak normal...",
-    "gue denger sesuatu...",
-    "apa itu barusan?!",
-    "ini makin parah...",
-    "gue harus pergi sekarang!"
-  ];
-  const en = [
-    "this is not normal...",
-    "i hear something...",
-    "what was that?!",
-    "this is getting worse...",
-    "i need to leave now!"
-  ];
+  const id = ["ini gak normal","gue denger sesuatu","apa itu?!","ini makin parah","gue cabut!"];
+  const en = ["not normal","i hear something","what was that","getting worse","im leaving"];
   return lang === "id" ? id[i%5] : en[i%5];
 }
 
 function generate(){
   try{
 
+    // INPUT
     let keyword = document.getElementById("keyword").value || "kejadian aneh";
     let location = document.getElementById("location").value || "tempat misterius";
     let lang = document.getElementById("lang").value;
     let scenes = parseInt(document.getElementById("scenes").value) || 4;
 
-    // 🔥 FIX IMAGE (WAJIB DI DALAM FUNCTION)
-    let imgInput = document.getElementById("imgRef");
+    // 🔥 IMAGE REFERENCE FIX (ANTI ERROR TOTAL)
     let refText = "[NO REFERENCE IMAGE]";
+    let imgEl = document.getElementById("imgRef");
 
-    if(imgInput && imgInput.files && imgInput.files.length > 0){
+    if(imgEl && imgEl.files && imgEl.files.length > 0){
       refText = "[REFERENCE_IMAGE: uploaded]";
     }
 
     let imgPrompt = "";
     let videoPrompt = "";
-    let thumbnail = "";
-    let hashtag = "";
-
-    // CHECK IMAGE
-    let imgFile = document.getElementById("imgRef").files[0];
-    let refText = imgFile ? "[REFERENCE_IMAGE: uploaded]" : "[NO REFERENCE IMAGE]";
 
     // ===== IMAGE PROMPT =====
     for(let i=1;i<=scenes;i++){
+
       imgPrompt += "=== IMAGE SCENE " + i + " ===\n";
 
       if(i==1){
@@ -119,6 +103,7 @@ function generate(){
 
     // ===== VIDEO PROMPT =====
     for(let i=1;i<=scenes;i++){
+
       videoPrompt += "=== VIDEO SCENE " + i + " ===\n";
 
       if(i==1){
@@ -139,22 +124,23 @@ function generate(){
       videoPrompt += "dialog: " + dialog(i, lang) + "\n\n";
     }
 
-    // ===== THUMBNAIL =====
-    thumbnail = "POV selfie, ekspresi kaget, " + keyword + ", cinematic lighting, ultra realistic";
+    // THUMBNAIL
+    let thumbnail = "POV selfie, ekspresi kaget, " + keyword + ", cinematic lighting, ultra realistic";
 
-    // ===== HASHTAG =====
-    hashtag = "#povvlog #aivideo #viral #" + keyword.replace(/ /g,"");
+    // HASHTAG
+    let hashtag = "#povvlog #aivideo #viral #" + keyword.replace(/ /g,"");
 
     // OUTPUT
-    document.getElementById("video").value = videoPrompt;
     document.getElementById("image").value = imgPrompt;
-    document.getElementById("script").value = thumbnail;
+    document.getElementById("video").value = videoPrompt;
+    document.getElementById("thumbnail").value = thumbnail;
     document.getElementById("tag").value = hashtag;
 
   }catch(e){
     alert("ERROR: " + e.message);
   }
 }
-  </script>
+</script>
+
 </body>
 </html>
