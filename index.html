@@ -23,7 +23,10 @@ textarea {height:150px;}
 <option value="time">Time Travel</option>
 <option value="daily">Daily</option>
 </select>
-
+  
+<label>Upload Image Reference</label>
+<input type="file" id="imgRef" accept="image/*">
+  
 <input id="keyword" placeholder="alien di hutan">
 <input id="location" placeholder="lokasi">
 
@@ -73,6 +76,12 @@ function dialog(i, lang){
 
 function generate(){
   try{
+    let imgInput = document.getElementById("imgRef");
+    let refText = "[NO REFERENCE IMAGE]";
+
+    if(imgInput && imgInput.files.length > 0){
+  refText = "[REFERENCE_IMAGE: uploaded]";
+}
     let keyword = document.getElementById("keyword").value || "kejadian aneh";
     let location = document.getElementById("location").value || "tempat misterius";
     let lang = document.getElementById("lang").value;
