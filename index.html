@@ -49,21 +49,7 @@
 
   </div>
 </div><script>
-document.addEventListener("DOMContentLoaded", function(){
-
-let imageData = "";
-
-const modeEl = document.getElementById('mode');
-const keywordEl = document.getElementById('keyword');
-const locationEl = document.getElementById('location');
-const moodEl = document.getElementById('mood');
-const scenesEl = document.getElementById('scenes');
-const langEl = document.getElementById('lang');
-
-const videoOutput = document.getElementById('videoOutput');
-const imageOutput = document.getElementById('imageOutput');
-const scriptOutput = document.getElementById('scriptOutput');
-const hashtagOutput = document.getElementById('hashtagOutput');
+// SIMPLIFIED & ROBUST VERSION (NO DOM READY DEPENDENCY)
 
 function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
@@ -85,15 +71,14 @@ function generateDialog(i, lang){
   return lang==='id'? id[i%id.length]:en[i%en.length];
 }
 
-window.generateAll = function(){
-  console.log("Generate clicked");
+function generateAll(){
   try {
-    const mode = modeEl.value;
-    const keyword = keywordEl.value || "unknown event";
-    const location = locationEl.value || "unknown place";
-    const mood = moodEl.value;
-    const scenes = parseInt(scenesEl.value) || 4;
-    const lang = langEl.value;
+    const mode = document.getElementById('mode').value;
+    const keyword = document.getElementById('keyword').value || "unknown event";
+    const location = document.getElementById('location').value || "unknown place";
+    const mood = document.getElementById('mood').value;
+    const scenes = parseInt(document.getElementById('scenes').value) || 4;
+    const lang = document.getElementById('lang').value;
 
     let video="", image="", script="", hashtag="";
 
@@ -121,28 +106,30 @@ POV vlog, same identity, ultra realistic, mood: ${mood}
 
     hashtag = `#aivideo #povvlog #viral #cinematic #fyp #storytelling #${keyword.replace(/ /g,'')}`;
 
-    videoOutput.value = video;
-    imageOutput.value = image;
-    scriptOutput.value = script;
-    hashtagOutput.value = hashtag;
+    document.getElementById('videoOutput').value = video;
+    document.getElementById('imageOutput').value = image;
+    document.getElementById('scriptOutput').value = script;
+    document.getElementById('hashtagOutput').value = hashtag;
 
   } catch (err) {
-    alert("Error: " + err.message);
+    alert("ERROR: " + err.message);
   }
 }
 
-window.copyAll = function(){
-  const all = videoOutput.value + "
+function copyAll(){
+  const all = document.getElementById('videoOutput').value + "
 
-" + imageOutput.value + "
+" +
+              document.getElementById('imageOutput').value + "
 
-" + scriptOutput.value + "
+" +
+              document.getElementById('scriptOutput').value + "
 
-" + hashtagOutput.value;
+" +
+              document.getElementById('hashtagOutput').value;
+
   navigator.clipboard.writeText(all);
   alert('Copied All!');
 }
-
-});
 </script></body>
 </html>
