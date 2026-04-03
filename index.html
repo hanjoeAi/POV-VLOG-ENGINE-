@@ -12,6 +12,13 @@ input, select, textarea, button {
 }
 button {background:orange; font-weight:bold;}
 textarea {height:160px;}
+  pre {
+  background:#0f172a;
+  padding:12px;
+  border-radius:10px;
+  overflow:auto;
+  margin-bottom:12px;
+  }
 </style>
 </head>
 
@@ -39,102 +46,105 @@ textarea {height:160px;}
 
 <button onclick="generate()">GENERATE</button>
 
-<h3>🎬 IMAGE PROMPT (per scene)</h3>
-<textarea id="image"></textarea>
-
-<h3>🎥 VIDEO PROMPT (per scene)</h3>
-<textarea id="video"></textarea>
-
-<h3>🖼️ THUMBNAIL</h3>
-<textarea id="thumbnail"></textarea>
-
-<h3>🔥 HASHTAG</h3>
-<textarea id="tag"></textarea>
-
 <script>
 function rand(arr){
   return arr[Math.floor(Math.random()*arr.length)];
 }
 
-function dialog(i, lang){
-  const id = ["ini gak normal","gue denger sesuatu","apa itu?!","ini makin parah","gue cabut!"];
-  const en = ["not normal","i hear something","what was that","getting worse","im leaving"];
-  return lang === "id" ? id[i%5] : en[i%5];
-}
-
 function generate(){
   try{
 
-    // INPUT
     let keyword = document.getElementById("keyword").value || "kejadian aneh";
     let location = document.getElementById("location").value || "tempat misterius";
     let lang = document.getElementById("lang").value;
     let scenes = parseInt(document.getElementById("scenes").value) || 4;
 
-    // 🔥 IMAGE REFERENCE FIX (ANTI ERROR TOTAL)
-    let refText = "[NO REFERENCE IMAGE]";
     let imgEl = document.getElementById("imgRef");
+    let refText = imgEl && imgEl.files.length > 0 
+      ? "same person as reference image, consistent face, no variation"
+      : "generic person";
 
-    if(imgEl && imgEl.files && imgEl.files.length > 0){
-      refText = "[REFERENCE_IMAGE: uploaded]";
-    }
+    let imageHTML = "";
+    let videoHTML = "";
 
-    let imgPrompt = "";
-    let videoPrompt = "";
-
-    // ===== IMAGE PROMPT =====
     for(let i=1;i<=scenes;i++){
 
-      imgPrompt += "=== IMAGE SCENE " + i + " ===\n";
+      // ===== IMAGE PROMPT (CINEMATIC STRUCTURE) =====
+      let imgPrompt = `
+POV selfie vlog shot, ${refText}
+location: ${location}
+scenario: ${keyword}
+scene progression: ${
+        i==1 ? "normal situation, calm environment" :
+        i==2 ? "strange anomaly begins to appear" :
+        i==scenes ? "chaos, fear, panic, dramatic climax" :
+        "tension rising, something feels wrong"
+      }
 
-      if(i==1){
-        imgPrompt += refText + "\nPOV selfie di " + location + ", suasana normal, natural lighting, ultra realistic\n\n";
+character:
+- expression: ${
+        i==1 ? "neutral, relaxed" :
+        i==2 ? "confused, slightly worried" :
+        i==scenes ? "terrified, shocked" :
+        "anxious, alert"
       }
-      else if(i==2){
-        imgPrompt += refText + "\nkejadian aneh mulai muncul: " + keyword + ", ekspresi bingung\n\n";
-      }
-      else if(i==scenes){
-        imgPrompt += refText + "\nchaos, panik, ekspresi takut, dramatic lighting\n\n";
-      }
-      else{
-        imgPrompt += refText + "\nketegangan meningkat, situasi tidak normal\n\n";
-      }
+- camera: handheld selfie, slight shake
+- angle: eye level, close-up face
+
+lighting:
+- realistic natural light
+- cinematic contrast
+- dynamic shadows
+
+style:
+- ultra realistic
+- documentary vlog
+- raw footage
+`;
+
+      imageHTML += `<pre><code>${imgPrompt}</code></pre>`;
+
+      // ===== VIDEO PROMPT =====
+      let videoPrompt = `
+POV vlog video, handheld camera
+based on image scene ${i}
+
+action:
+${
+  i==1 ? "walking casually, talking to camera" :
+  i==2 ? "noticing something strange, reacting slowly" :
+  i==scenes ? "running, panic, chaotic movement" :
+  "looking around, nervous movement"
+}
+
+camera:
+- handheld shake
+- natural movement
+- imperfect framing
+
+audio:
+- ambient sound
+- breathing
+- environmental noise
+
+dialog (${lang}):
+${
+  lang=="id"
+  ? ["ini gak normal","gue denger sesuatu","apa itu?!","ini makin parah","gue cabut!"][i%5]
+  : ["this is not normal","i hear something","what was that","this is getting worse","im leaving"][i%5]
+}
+`;
+
+      videoHTML += `<pre><code>${videoPrompt}</code></pre>`;
     }
 
-    // ===== VIDEO PROMPT =====
-    for(let i=1;i<=scenes;i++){
+    let thumbnail = `POV selfie, shocked expression, ${keyword}, cinematic lighting, ultra realistic`;
+    let hashtag = `#povvlog #aivideo #cinematic #viral #fyp #${keyword.replace(/ /g,"")}`;
 
-      videoPrompt += "=== VIDEO SCENE " + i + " ===\n";
-
-      if(i==1){
-        videoPrompt += "POV vlog normal di " + location + "\n";
-      }
-      else if(i==2){
-        videoPrompt += "kejadian mulai: " + keyword + "\n";
-      }
-      else if(i==scenes){
-        videoPrompt += "chaos + " + rand(["blackout","kamera jatuh","lari panik"]) + "\n";
-      }
-      else{
-        videoPrompt += "ketegangan meningkat\n";
-      }
-
-      videoPrompt += "camera: handheld shake\n";
-      videoPrompt += "audio: ambience + nafas\n";
-      videoPrompt += "dialog: " + dialog(i, lang) + "\n\n";
-    }
-
-    // THUMBNAIL
-    let thumbnail = "POV selfie, ekspresi kaget, " + keyword + ", cinematic lighting, ultra realistic";
-
-    // HASHTAG
-    let hashtag = "#povvlog #aivideo #viral #" + keyword.replace(/ /g,"");
-
-    // OUTPUT
-    document.getElementById("image").value = imgPrompt;
-    document.getElementById("video").value = videoPrompt;
-    document.getElementById("thumbnail").value = thumbnail;
-    document.getElementById("tag").value = hashtag;
+    document.getElementById("image").innerHTML = imageHTML;
+    document.getElementById("video").innerHTML = videoHTML;
+    document.getElementById("thumbnail").textContent = thumbnail;
+    document.getElementById("tag").textContent = hashtag;
 
   }catch(e){
     alert("ERROR: " + e.message);
