@@ -1,135 +1,93 @@
-<!DOCTYPE html><html lang="id">
+<!DOCTYPE html>
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cinematic POV Vlog Generator v5 - Full Content Engine</title>
-  <style>
-    body {font-family: Arial, sans-serif; background:#020617; color:#fff; padding:20px;}
-    h1 {text-align:center;}
-    .container {max-width:1100px; margin:auto;}
-    input, select, textarea, button {
-      width:100%; padding:10px; margin:8px 0; border-radius:10px; border:none;
-    }
-    button {background:#f59e0b; color:#000; font-weight:bold; cursor:pointer;}
-    button:hover {background:#d97706;}
-    textarea {height:260px;}
-    .output {background:#020617; padding:15px; border-radius:12px; border:1px solid #1e293b; margin-top:15px;}
-    img {max-width:150px; margin-top:10px; border-radius:10px;}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POV Vlog Generator v5 FIX</title>
+
+<style>
+body {background:#020617; color:white; font-family:Arial; padding:20px;}
+input, select, textarea, button {
+  width:100%; margin:8px 0; padding:10px; border-radius:8px; border:none;
+}
+button {background:orange; font-weight:bold;}
+textarea {height:150px;}
+</style>
 </head>
-<body><div class="container">
-  <h1>🔥 Cinematic POV Vlog Generator v5</h1><label>Mode</label> <select id="mode"> <option value="time">Time Travel Vlog</option> <option value="daily">Daily Vlog</option> </select>
 
-<label>Upload Image Reference</label> <input type="file" id="imageFile" accept="image/*"> <img id="preview" style="display:none;" />
+<body>
 
-<label>Keyword / Era</label> <input type="text" id="keyword" placeholder="alien di hutan / ancient rome">
+<h2>🔥 POV Vlog Generator (FIX)</h2>
 
-<label>Lokasi</label> <input type="text" id="location" placeholder="hutan, kota, gurun...">
+<select id="mode">
+<option value="time">Time Travel</option>
+<option value="daily">Daily</option>
+</select>
 
-<label>Mood</label> <select id="mood"> <option value="horror">Horror</option> <option value="tense">Tense</option> <option value="epic">Epic</option> <option value="chaotic">Chaotic</option> </select>
+<input id="keyword" placeholder="alien di hutan">
+<input id="location" placeholder="lokasi">
 
-<label>Bahasa Dialog</label> <select id="lang"> <option value="id">Bahasa Indonesia</option> <option value="en">English</option> </select>
+<select id="lang">
+<option value="id">Indonesia</option>
+<option value="en">English</option>
+</select>
 
-<label>Jumlah Scene</label> <input type="number" id="scenes" value="4" min="3" max="6">
+<input id="scenes" type="number" value="4">
 
-<button type="button" onclick="generateAll()">🚀 Generate Full Content</button>
+<button onclick="generate()">GENERATE</button>
 
-  <div class="output">
-    <h3>🎬 Video Prompt</h3>
-    <textarea id="videoOutput"></textarea><h3>🖼️ Thumbnail Prompt</h3>
-<textarea id="imageOutput"></textarea>
+<h3>Video</h3>
+<textarea id="video"></textarea>
 
-<h3>🎙️ Script Narasi</h3>
-<textarea id="scriptOutput"></textarea>
+<h3>Image</h3>
+<textarea id="image"></textarea>
 
-<h3>🔥 Hashtag</h3>
-<textarea id="hashtagOutput"></textarea>
+<h3>Script</h3>
+<textarea id="script"></textarea>
 
-<button onclick="copyAll()">📋 Copy All</button>
+<h3>Hashtag</h3>
+<textarea id="tag"></textarea>
 
-  </div>
-</div><script>
-// SIMPLIFIED & ROBUST VERSION (NO DOM READY DEPENDENCY)
-
-function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-
-function generateDialog(i, lang){
-  const id = [
-    "guys ini gak normal...",
-    "serius gue denger sesuatu",
-    "apa itu barusan?!",
-    "ini makin gak masuk akal...",
-    "gue harus cabut sekarang!"
-  ];
-  const en = [
-    "guys this is not normal...",
-    "I hear something...",
-    "what was that?!",
-    "this is getting worse...",
-    "I need to leave now!"
-  ];
-  return lang==='id'? id[i%id.length]:en[i%en.length];
+<script>
+function dialog(i, lang){
+  const id = ["ini gak normal", "gue denger sesuatu", "apa itu?!", "ini makin parah", "gue cabut!"];
+  const en = ["not normal", "i hear something", "what was that", "getting worse", "im leaving"];
+  return lang === "id" ? id[i%5] : en[i%5];
 }
 
-function generateAll(){
-  try {
-    const mode = document.getElementById('mode').value;
-    const keyword = document.getElementById('keyword').value || "unknown event";
-    const location = document.getElementById('location').value || "unknown place";
-    const mood = document.getElementById('mood').value;
-    const scenes = parseInt(document.getElementById('scenes').value) || 4;
-    const lang = document.getElementById('lang').value;
+function generate(){
+  try{
+    let keyword = document.getElementById("keyword").value || "aneh";
+    let location = document.getElementById("location").value || "tempat";
+    let lang = document.getElementById("lang").value;
+    let scenes = parseInt(document.getElementById("scenes").value) || 4;
 
-    let video="", image="", script="", hashtag="";
-
-    video += `[REFERENCE_IMAGE: uploaded]
-POV vlog, same identity, ultra realistic, mood: ${mood}
-
-`;
+    let video = "";
+    let script = "";
 
     for(let i=1;i<=scenes;i++){
-      video += `SCENE ${i}: `;
-      if(i===1) video += `normal vlog in ${location}`;
-      else if(i===2) video += `strange event begins: ${keyword}`;
-      else if(i===scenes) video += `chaos + panic + ${rand(["blackout","camera drop","glitch","run away"])}`;
-      else video += `tension increases`;
+      video += "SCENE " + i + ": ";
+      if(i==1) video += "normal di " + location;
+      else if(i==2) video += "mulai aneh: " + keyword;
+      else if(i==scenes) video += "panic chaos";
+      else video += "tegang meningkat";
 
-      video += ` | dialog: "${generateDialog(i,lang)}"
-`;
+      let d = dialog(i, lang);
+      video += " | dialog: " + d + "\n";
+
+      script += d + " ";
     }
 
-    image = `POV selfie thumbnail, shocked expression, ${keyword}, cinematic lighting, ultra realistic, same face as reference`;
+    document.getElementById("video").value = video;
+    document.getElementById("image").value = "thumbnail " + keyword;
+    document.getElementById("script").value = script;
+    document.getElementById("tag").value = "#viral #" + keyword;
 
-    for(let i=1;i<=scenes;i++){
-      script += generateDialog(i,lang) + " ";
-    }
-
-    hashtag = `#aivideo #povvlog #viral #cinematic #fyp #storytelling #${keyword.replace(/ /g,'')}`;
-
-    document.getElementById('videoOutput').value = video;
-    document.getElementById('imageOutput').value = image;
-    document.getElementById('scriptOutput').value = script;
-    document.getElementById('hashtagOutput').value = hashtag;
-
-  } catch (err) {
-    alert("ERROR: " + err.message);
+  }catch(e){
+    alert("ERROR: " + e.message);
   }
 }
+</script>
 
-function copyAll(){
-  const all = document.getElementById('videoOutput').value + "
-
-" +
-              document.getElementById('imageOutput').value + "
-
-" +
-              document.getElementById('scriptOutput').value + "
-
-" +
-              document.getElementById('hashtagOutput').value;
-
-  navigator.clipboard.writeText(all);
-  alert('Copied All!');
-}
-</script></body>
+</body>
 </html>
