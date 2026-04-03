@@ -19,6 +19,30 @@ textarea {height:160px;}
   overflow:auto;
   margin-bottom:12px;
   }
+  .block {
+  position: relative;
+  margin-bottom: 14px;
+}
+
+.copyBtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #22c55e;
+  color: #000;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.copyBtn:hover {
+  background: #16a34a;
+}
+  .block code {
+  white-space: pre-wrap;
+  }
 </style>
 </head>
 
@@ -63,7 +87,151 @@ function rand(arr){
   return arr[Math.floor(Math.random()*arr.length)];
 }
 
+// MICRO EXPRESSION
+function expression(i, last){
+  if(i==1) return "relaxed, natural face, steady breathing";
+  if(i==2) return "slight confusion, eyebrows tense, subtle eye movement";
+  if(i==last) return "extreme fear, eyes wide, heavy breathing, panic";
+  return "anxious, scanning surroundings, nervous micro-movements";
+}
+
+// CAMERA PATH
+function cameraPath(i, last){
+  if(i==1) return "stable handheld, slight natural sway";
+  if(i==2) return "slow push-in toward face";
+  if(i==last) return rand([
+    "violent shaky run camera",
+    "sudden drop to ground",
+    "rapid chaotic movement",
+    "whip pan + motion blur"
+  ]);
+  return rand([
+    "slow tracking forward",
+    "subtle orbit movement",
+    "nervous handheld shake",
+    "quick pan left-right"
+  ]);
+}
+
+// LIGHTING
+function lighting(i, last){
+  if(i==1) return "natural daylight, soft shadows";
+  if(i==2) return "slightly dim, contrast increasing";
+  if(i==last) return "dark, high contrast, horror tone";
+  return "uneven lighting, shifting shadows";
+}
+
+// SOUND DESIGN
+function sound(i, last){
+  if(i==1) return "natural ambience, wind, distant environment";
+  if(i==2) return "ambience + subtle strange noise";
+  if(i==last) return rand([
+    "loud chaos, breathing, scream, distortion",
+    "sudden silence then impact sound",
+    "glitch audio, frequency distortion"
+  ]);
+  return rand([
+    "footsteps + ambient wind",
+    "distant echo + rustling leaves",
+    "low frequency hum"
+  ]);
+}
+
+// DIALOG
+function dialog(i, lang, keyword){
+
+  let type = detectType(keyword);
+
+  const dialogs = {
+
+    alien: {
+      id: [
+        ["ini tempat biasa aja...", "kayaknya aman..."],
+        ["eh... itu cahaya apa?", "kayak ada sesuatu di langit..."],
+        ["itu UFO?!", "itu bukan pesawat..."],
+        ["mereka ngelihat gue...", "itu makin dekat..."],
+        ["GUE CABUT!", "lari sekarang!"]
+      ],
+      en: [
+        ["this looks normal...", "seems safe..."],
+        ["what is that light?", "something in the sky..."],
+        ["is that a UFO?!", "that’s not a plane..."],
+        ["they’re watching me...", "it’s getting closer..."],
+        ["I'M OUT!", "run now!"]
+      ]
+    },
+
+    horror: {
+      id: [
+        ["sepi banget disini...", "sunyi aneh..."],
+        ["eh... ada suara...", "kayak ada yang gerak..."],
+        ["itu sosok apa?!", "itu siapa?!"],
+        ["dia ngikutin gue...", "itu makin dekat..."],
+        ["GUE LARI!", "gue gak kuat!"]
+      ],
+      en: [
+        ["it’s too quiet...", "this place feels wrong..."],
+        ["i hear something...", "something moved..."],
+        ["what is that figure?!", "who is that?!"],
+        ["it’s following me...", "it’s getting closer..."],
+        ["RUN!", "i can’t stay here!"]
+      ]
+    },
+
+    mystery: {
+      id: [
+        ["kayaknya biasa aja...", "nothing weird..."],
+        ["eh tunggu...", "ada yang aneh..."],
+        ["itu apa barusan?!", "gue liat sesuatu..."],
+        ["ini gak masuk akal...", "ini makin aneh..."],
+        ["gue cabut sekarang!", "ini bahaya!"]
+      ],
+      en: [
+        ["seems normal...", "nothing strange..."],
+        ["wait...", "something is off..."],
+        ["what was that?!", "i saw something..."],
+        ["this makes no sense...", "this is getting weird..."],
+        ["im leaving now!", "this is dangerous!"]
+      ]
+    }
+
+  };
+
+  let pool = dialogs[type][lang];
+  return rand(pool[i % pool.length]);
+  }
+
+function detectType(keyword){
+
+  keyword = keyword.toLowerCase();
+
+  if(keyword.includes("alien") || keyword.includes("ufo"))
+    return "alien";
+
+  if(keyword.includes("hantu") || keyword.includes("setan") || keyword.includes("pocong"))
+    return "horror";
+
+  if(keyword.includes("malaikat"))
+    return "angel";
+
+  if(keyword.includes("monster"))
+    return "creature";
+
+  return "mystery";
+}
+
+// ENDING VARIATION
+function ending(){
+  return rand([
+    "suddenly disappears from frame",
+    "unknown creature appears behind",
+    "reality glitch distortion",
+    "camera falls and cuts to black"
+  ]);
+}
+
 function generate(){
+
   try{
 
     let keyword = document.getElementById("keyword").value || "kejadian aneh";
@@ -72,8 +240,8 @@ function generate(){
     let scenes = parseInt(document.getElementById("scenes").value) || 4;
 
     let imgEl = document.getElementById("imgRef");
-    let refText = imgEl && imgEl.files.length > 0 
-      ? "same person as reference image, consistent face, no variation"
+    let refText = (imgEl && imgEl.files.length > 0)
+      ? "same person as reference image, identical face, ultra consistency"
       : "generic person";
 
     let imageHTML = "";
@@ -81,77 +249,79 @@ function generate(){
 
     for(let i=1;i<=scenes;i++){
 
-      // ===== IMAGE PROMPT (CINEMATIC STRUCTURE) =====
       let imgPrompt = `
-POV selfie vlog shot, ${refText}
-location: ${location}
-scenario: ${keyword}
-scene progression: ${
-        i==1 ? "normal situation, calm environment" :
-        i==2 ? "strange anomaly begins to appear" :
-        i==scenes ? "chaos, fear, panic, dramatic climax" :
-        "tension rising, something feels wrong"
-      }
+POV selfie vlog, ${refText}
 
-character:
-- expression: ${
-        i==1 ? "neutral, relaxed" :
-        i==2 ? "confused, slightly worried" :
-        i==scenes ? "terrified, shocked" :
-        "anxious, alert"
-      }
-- camera: handheld selfie, slight shake
-- angle: eye level, close-up face
+scene ${i} / ${scenes}
+
+location:
+${location}
+
+event:
+${keyword}
+
+composition:
+- shot: ${rand(["close-up","medium shot","wide shot"])}
+- camera path: ${cameraPath(i, scenes)}
+- angle: eye level
+
+character micro-expression:
+${expression(i, scenes)}
 
 lighting:
-- realistic natural light
-- cinematic contrast
-- dynamic shadows
+${lighting(i, scenes)}
+
+details:
+- skin texture visible
+- eye reflection realistic
+- motion blur subtle
+- cinematic realism
 
 style:
-- ultra realistic
-- documentary vlog
-- raw footage
+ultra realistic, raw vlog footage, documentary style
 `;
 
-      imageHTML += `<pre><code>${imgPrompt}</code></pre>`;
+      imageHTML += `
+<div class="block">
+<button class="copyBtn" onclick="copyText(this)">Copy</button>
+<pre><code>${imgPrompt}</code></pre>
+</div>`;
 
-      // ===== VIDEO PROMPT =====
       let videoPrompt = `
-POV vlog video, handheld camera
-based on image scene ${i}
+POV vlog cinematic video (scene ${i})
 
 action:
 ${
-  i==1 ? "walking casually, talking to camera" :
-  i==2 ? "noticing something strange, reacting slowly" :
-  i==scenes ? "running, panic, chaotic movement" :
-  "looking around, nervous movement"
+i==1 ? "casual talking to camera" :
+i==2 ? "noticing anomaly, slowing movement" :
+i==scenes ? ending() :
+"nervous scanning environment"
 }
 
 camera:
-- handheld shake
-- natural movement
-- imperfect framing
+${cameraPath(i, scenes)}
 
 audio:
-- ambient sound
-- breathing
-- environmental noise
+${sound(i, scenes)}
 
 dialog (${lang}):
-${
-  lang=="id"
-  ? ["ini gak normal","gue denger sesuatu","apa itu?!","ini makin parah","gue cabut!"][i%5]
-  : ["this is not normal","i hear something","what was that","this is getting worse","im leaving"][i%5]
-}
+${dialog(i, lang)}
+
+extra:
+- imperfect framing
+- natural motion blur
+- handheld realism
 `;
 
-      videoHTML += `<pre><code>${videoPrompt}</code></pre>`;
+      videoHTML += `
+<div class="block">
+<button class="copyBtn" onclick="copyText(this)">Copy</button>
+<pre><code>${videoPrompt}</code></pre>
+</div>`;
     }
 
-    let thumbnail = `POV selfie, shocked expression, ${keyword}, cinematic lighting, ultra realistic`;
-    let hashtag = `#povvlog #aivideo #cinematic #viral #fyp #${keyword.replace(/ /g,"")}`;
+    let thumbnail = `POV selfie, extreme shock face, ${keyword}, dramatic lighting, ultra realistic, viral thumbnail`;
+    let hashtag = `#povvlog #cinematic #aivideo #viral #fyp #story #${keyword.replace(/ /g,"")}`;
 
     document.getElementById("image").innerHTML = imageHTML;
     document.getElementById("video").innerHTML = videoHTML;
@@ -162,7 +332,14 @@ ${
     alert("ERROR: " + e.message);
   }
 }
-</script>
+
+// COPY
+function copyText(btn){
+  let text = btn.parentElement.innerText.replace("Copy","");
+  navigator.clipboard.writeText(text);
+  alert("Copied!");
+}
+    </script>
 
 </body>
 </html>
