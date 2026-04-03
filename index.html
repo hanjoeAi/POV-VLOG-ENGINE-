@@ -78,57 +78,72 @@ function generate(){
     let lang = document.getElementById("lang").value;
     let scenes = parseInt(document.getElementById("scenes").value) || 4;
 
-    let video = "";
-    let script = "";
-    let image = "";
+    let imgPrompt = "";
+    let videoPrompt = "";
+    let thumbnail = "";
     let hashtag = "";
 
-    // VIDEO PROMPT
-    video += "[REFERENCE_IMAGE: uploaded]\n";
-    video += "POV handheld selfie vlog, ultra realistic, raw footage\n\n";
+    // CHECK IMAGE
+    let imgFile = document.getElementById("imgRef").files[0];
+    let refText = imgFile ? "[REFERENCE_IMAGE: uploaded]" : "[NO REFERENCE IMAGE]";
 
+    // ===== IMAGE PROMPT =====
     for(let i=1;i<=scenes;i++){
-      video += "SCENE " + i + ": ";
+      imgPrompt += "=== IMAGE SCENE " + i + " ===\n";
 
       if(i==1){
-        video += "normal vlog di " + location + ", suasana tenang";
+        imgPrompt += refText + "\nPOV selfie di " + location + ", suasana normal, natural lighting, ultra realistic\n\n";
       }
       else if(i==2){
-        video += "kejadian aneh mulai muncul: " + keyword;
+        imgPrompt += refText + "\nkejadian aneh mulai muncul: " + keyword + ", ekspresi bingung\n\n";
       }
       else if(i==scenes){
-        video += "chaos, panik, " + rand(["kamera jatuh","blackout","lari ketakutan"]);
+        imgPrompt += refText + "\nchaos, panik, ekspresi takut, dramatic lighting\n\n";
       }
       else{
-        video += "ketegangan meningkat, situasi tidak normal";
+        imgPrompt += refText + "\nketegangan meningkat, situasi tidak normal\n\n";
       }
-
-      let d = dialog(i, lang);
-
-      video += "\n- camera: handheld shake, realistic movement";
-      video += "\n- audio: ambience + nafas berat";
-      video += "\n- dialog: " + d + "\n\n";
-
-      script += d + " ";
     }
 
-    // THUMBNAIL
-    image = "POV selfie, ekspresi kaget, " + keyword + ", cinematic lighting, ultra realistic";
+    // ===== VIDEO PROMPT =====
+    for(let i=1;i<=scenes;i++){
+      videoPrompt += "=== VIDEO SCENE " + i + " ===\n";
 
-    // HASHTAG
+      if(i==1){
+        videoPrompt += "POV vlog normal di " + location + "\n";
+      }
+      else if(i==2){
+        videoPrompt += "kejadian mulai: " + keyword + "\n";
+      }
+      else if(i==scenes){
+        videoPrompt += "chaos + " + rand(["blackout","kamera jatuh","lari panik"]) + "\n";
+      }
+      else{
+        videoPrompt += "ketegangan meningkat\n";
+      }
+
+      videoPrompt += "camera: handheld shake\n";
+      videoPrompt += "audio: ambience + nafas\n";
+      videoPrompt += "dialog: " + dialog(i, lang) + "\n\n";
+    }
+
+    // ===== THUMBNAIL =====
+    thumbnail = "POV selfie, ekspresi kaget, " + keyword + ", cinematic lighting, ultra realistic";
+
+    // ===== HASHTAG =====
     hashtag = "#povvlog #aivideo #viral #" + keyword.replace(/ /g,"");
 
     // OUTPUT
-    document.getElementById("video").value = video;
-    document.getElementById("image").value = image;
-    document.getElementById("script").value = script;
+    document.getElementById("video").value = videoPrompt;
+    document.getElementById("image").value = imgPrompt;
+    document.getElementById("script").value = thumbnail;
     document.getElementById("tag").value = hashtag;
 
   }catch(e){
     alert("ERROR: " + e.message);
   }
 }
-</script>
+        </script>
 
 </body>
 </html>
